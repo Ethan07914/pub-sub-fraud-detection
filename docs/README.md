@@ -100,5 +100,10 @@ gcloud pubsub subscriptions create fraud-data_sub --topic=fraud-data
 
 **Set Pub/Sub subscription to write to a staging table in the Cloud Console UI**
 
+**Create the view for analysis**
+
+```bash
+bq query --use_legacy_sql=false < sql/vw_card_testing_monitor.sql
+```
 
 

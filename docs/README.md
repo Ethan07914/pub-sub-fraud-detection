@@ -66,6 +66,11 @@ Lightweight UI showing the live transaction stream, with attack spikes and flagg
 - Exact thresholds that define a "flagged" transaction for the rule-based layer (velocity/decline-rate/distinct-card cutoffs)
 - How the dashboard will be built (framework, hosting, refresh mechanism)
 
+## Future Ideas
+
+- **`alert_event` logging table** — persist a row each time `vw_card_testing_monitor` flags `is_alert = true` (merchant, time window, `severity_score`, `alerted_on`, recorded-at timestamp), so alert history isn't lost when the view's underlying window ages out. Could be populated by a scheduled query against the view.
+- **Streamlit UI** — resolves the "Dashboard: framework TBD" open item; a Streamlit app reading from BigQuery (the monitor view and/or the new `alert_event` table) to show the live transaction stream with attack spikes and flagged events called out, per the Dashboard component description.
+
 ## Status
 
 Planning stage — no code written yet. This README captures the intended architecture and scope before implementation begins.
@@ -87,6 +92,9 @@ bq mk --dataset --location=us-central1 fraud_analytics
 **Create tables**
 ```bash
 bq mk --table \
+  --time_partitioning_field=timestamp \
+  --time_partitioning_type=DAY \
+  --clustering_fields=merchant_id,card_id,source_ip \
   fraud_staging.transactions \
   transaction_id:STRING,timestamp:TIMESTAMP,amount:FLOAT,merchant_id:STRING,card_id:STRING,source_ip:STRING,status:STRING
 ```

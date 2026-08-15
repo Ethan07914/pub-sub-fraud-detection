@@ -68,7 +68,9 @@ Lightweight UI showing the live transaction stream, with attack spikes and flagg
 
 ## Future Ideas
 
-- **`alert_event` logging table** — persist a row each time `vw_card_testing_monitor` flags `is_alert = true` (merchant, time window, `severity_score`, `alerted_on`, recorded-at timestamp), so alert history isn't lost when the view's underlying window ages out. Could be populated by a scheduled query against the view.
+- **`alert_event` logging table** — persist a row each time `vw_card_testing_monitor` flags `is_alert = true` (merchant, time window, `severity_score`, `alerted_on`, recorded-at timestamp), so alert history isn't lost when the view's underlying window ages out.
+  - Ideally this would append via a BigQuery **continuous query**, but that requires an Enterprise/Enterprise Plus reservation (paid slots) — not available on the free trial's on-demand billing, and not worth requesting a quota increase for a portfolio project.
+  - Recommended instead: a **scheduled query** (BigQuery Scheduled Queries) running `INSERT INTO alert_event SELECT ... FROM vw_card_testing_monitor WHERE is_alert` on a fixed interval (e.g. every 5 minutes). Runs on regular on-demand pricing, no reservation needed — just near-real-time instead of continuous.
 - **Streamlit UI** — resolves the "Dashboard: framework TBD" open item; a Streamlit app reading from BigQuery (the monitor view and/or the new `alert_event` table) to show the live transaction stream with attack spikes and flagged events called out, per the Dashboard component description.
 
 ## Status

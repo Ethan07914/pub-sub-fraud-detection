@@ -1,1 +1,4 @@
 google-cloud-pubsub
+google-cloud-bigquery
+db-dtypes
+streamlit
